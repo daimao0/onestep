@@ -1,0 +1,9 @@
+database:
+  host: 172.22.45.76
+  port: 3306
+  user: root
+  password: 123456
+  dsn: root:123456@tcp(localhost:3306)
+  maxOpenConn: 100
+  maxIdleConn: 10
+  maxLifetime: 60
