@@ -11,6 +11,7 @@ import (
 func RegisterRoutes(engine *gin.Engine) {
 	// new controller
 	workspaceController := controller.NewWorkspaceController()
+	codeSourceController := controller.NewCodeSourceController()
 	// handle cors config
 	config := cors.Config{
 		AllowOrigins:     []string{"*"}, // 允许所有来源
@@ -23,9 +24,14 @@ func RegisterRoutes(engine *gin.Engine) {
 	engine.Use(cors.New(config))
 	group := engine.Group("/api")
 	v1 := group.Group("/v1")
-	helloGroup := v1.Group("/")
+	workspaceGroup := v1.Group("/workspace")
 	{
-		helloGroup.GET("/:id", workspaceController.GetById)
-		helloGroup.POST("/project", workspaceController.Create)
+		workspaceGroup.GET("/:id", workspaceController.GetById)
+		workspaceGroup.POST("/", workspaceController.Create)
+	}
+
+	codeSourceGroup := v1.Group("/code-source")
+	{
+		codeSourceGroup.POST("/", codeSourceController.Bind)
 	}
 }
