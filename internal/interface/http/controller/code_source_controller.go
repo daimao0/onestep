@@ -6,6 +6,7 @@ import (
 	"onestep/internal/common/resp"
 	"onestep/internal/domain/codesource/model"
 	"onestep/internal/infrastructure/persistence"
+	"onestep/internal/interface/http/request"
 	"time"
 )
 
@@ -23,15 +24,18 @@ func NewCodeSourceController() *CodeSourceController {
 // Bind code source to workspace
 func (p *CodeSourceController) Bind(c *gin.Context) {
 	githubRepository := persistence.NewGithubRepositoryImpl()
+	sourceRequest := &request.CodeSourceCreateRequest{}
+	_ = c.BindJSON(sourceRequest)
+
 	githubRepository.Clone(&model.CodeSource{
 		Id:             0,
-		Name:           "",
-		Desc:           "",
+		Name:           sourceRequest.Name,
+		Desc:           sourceRequest.Desc,
 		RepositoryType: "",
-		RemoteURL:      "https://github.com/daimao0/one-step",
-		Username:       "daimao0",
-		Password:       "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",
-		RemoteToken:    "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",
+		RemoteURL:      sourceRequest.RemoteURL,
+		Username:       sourceRequest.Username,
+		Password:       sourceRequest.Password,
+		RemoteToken:    sourceRequest.RemoteToken,
 		CreatedAt:      time.Time{},
 		UpdatedAt:      time.Time{},
 	})

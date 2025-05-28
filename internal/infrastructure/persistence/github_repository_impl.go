@@ -1,9 +1,10 @@
 package persistence
 
 import (
-	"fmt"
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
+	"log"
 	"onestep/internal/domain/codesource/model"
 )
 
@@ -26,8 +27,11 @@ func (p *GithubRepositoryImpl) Clone(source *model.CodeSource) (string, error) {
 			Username: source.Name,
 			Password: source.RemoteToken,
 		},
+		ReferenceName: plumbing.NewBranchReferenceName("dev-v1.0.0"),
 	}
-	clone, err := git.PlainClone("./workspace/test", false, options)
-	fmt.Println(clone)
+	_, err := git.PlainClone("./workspace/test", false, options)
+	if err != nil {
+		log.Println(err.Error())
+	}
 	return "./workspace/test", err
 }
