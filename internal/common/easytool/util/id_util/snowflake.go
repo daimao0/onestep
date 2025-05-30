@@ -37,7 +37,7 @@ func NewSnowflake(machineID int64) *Snowflake {
 	}
 }
 
-func (s *Snowflake) GenerateID() int64 {
+func (s *Snowflake) GenerateID() int {
 	currentTimestamp := time.Now().UnixNano() / 1e6
 	if currentTimestamp == s.timestamp {
 		s.sequenceNum = (s.sequenceNum + 1) & maxSequenceNum
@@ -50,7 +50,7 @@ func (s *Snowflake) GenerateID() int64 {
 	s.timestamp = currentTimestamp
 	id := (currentTimestamp << (machineIDBits + sequenceBits)) |
 		(s.machineID << sequenceBits) | s.sequenceNum
-	return id
+	return int(id)
 }
 
 func (s *Snowflake) waitNextMillis() int64 {

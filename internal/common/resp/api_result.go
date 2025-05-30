@@ -1,6 +1,6 @@
 package resp
 
-import "onestep/internal/common/err"
+import "onestep/internal/common/error_code"
 
 // Resp struct
 type Resp struct {
@@ -15,7 +15,7 @@ type Resp struct {
 // Fail return fail resp
 func Fail(message string) Resp {
 	return Resp{
-		Code:    err.Fail.Code,
+		Code:    error_code.Fail.Code,
 		Message: message,
 	}
 }
@@ -23,7 +23,7 @@ func Fail(message string) Resp {
 // Success return success resp
 func Success(data interface{}) Resp {
 	return Resp{
-		Code: err.Success.Code,
+		Code: error_code.Success.Code,
 		Data: data,
 	}
 }
@@ -31,21 +31,21 @@ func Success(data interface{}) Resp {
 // Unauthorized return unauthorized resp
 func Unauthorized() Resp {
 	return Resp{
-		Code:    err.Unauthorized.Code,
-		Message: err.Unauthorized.Msg,
+		Code:    error_code.Unauthorized.Code,
+		Message: error_code.Unauthorized.Msg,
 	}
 }
 
 // InvalidParam return invalidParam resp
 func InvalidParam(msg string) Resp {
 	return Resp{
-		Code:    err.ValidateFailed.Code,
-		Message: err.ValidateFailed.Msg + "; " + msg,
+		Code:    error_code.ValidateFailed.Code,
+		Message: error_code.ValidateFailed.Msg + "; " + msg,
 	}
 }
 
 // SystemError return system error resp
-func SystemError(errorCode *err.ErrorCode) Resp {
+func SystemError(errorCode *error_code.ErrorCode) Resp {
 	return Resp{
 		Code:    errorCode.Code,
 		Message: errorCode.Msg,

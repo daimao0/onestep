@@ -8,6 +8,6 @@ import "onestep/internal/domain/codesource/model"
 // CodeSourceService operation git code source
 type CodeSourceService interface {
 
-	// Get code source
-	Get(id int) *model.CodeSource
+	// Init the code repository and creates the branches: fat, uat, pre, pro.
+	Init(source *model.CodeSource) error
 }

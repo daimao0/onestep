@@ -3,11 +3,12 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"onestep/internal/application/app"
+	"onestep/internal/application/app/app_impl"
+	"onestep/internal/application/cmd"
+	"onestep/internal/common/easytool/convert"
 	"onestep/internal/common/resp"
-	"onestep/internal/domain/codesource/model"
-	"onestep/internal/infrastructure/persistence"
 	"onestep/internal/interface/http/request"
-	"time"
 )
 
 // @Author CY Yan
@@ -15,29 +16,44 @@ import (
 
 // CodeSourceController : to handle code source related requests
 type CodeSourceController struct {
+	codeSourceApp app.CodeSourceApp
 }
 
 func NewCodeSourceController() *CodeSourceController {
-	return &CodeSourceController{}
+	return &CodeSourceController{
+		codeSourceApp: app_impl.NewCodeSourceAppImpl(),
+	}
 }
 
 // Bind code source to workspace
 func (p *CodeSourceController) Bind(c *gin.Context) {
-	githubRepository := persistence.NewGithubRepositoryImpl()
 	sourceRequest := &request.CodeSourceCreateRequest{}
-	_ = c.BindJSON(sourceRequest)
+	err := c.BindJSON(sourceRequest)
+	if err != nil {
+		c.JSON(http.StatusOK, resp.InvalidParam(""))
+		return
+	}
 
-	githubRepository.Clone(&model.CodeSource{
-		Id:             0,
-		Name:           sourceRequest.Name,
-		Desc:           sourceRequest.Desc,
-		RepositoryType: "",
-		RemoteURL:      sourceRequest.RemoteURL,
-		Username:       sourceRequest.Username,
-		Password:       sourceRequest.Password,
-		RemoteToken:    sourceRequest.RemoteToken,
-		CreatedAt:      time.Time{},
-		UpdatedAt:      time.Time{},
-	})
+	codeSourceCreateCmd := &cmd.CodeSourceCreateCmd{
+		WorkSpaceId: convert.ToInt(sourceRequest.WorkspaceId),
+		Desc:        sourceRequest.Desc,
+		Password:    sourceRequest.Password,
+		RemoteToken: sourceRequest.RemoteToken,
+		RemoteURL:   sourceRequest.RemoteURL,
+		Username:    sourceRequest.Username,
+	}
+
+	// bind and init code source
+	err = p.codeSourceApp.Init(codeSourceCreateCmd)
+	if err != nil {
+		c.JSON(http.StatusOK, resp.Fail(err.Error()))
+		return
+	}
+
 	c.JSON(http.StatusOK, resp.Success(nil))
+}
+
+// MergeBranchIntoEnv merge a dev branch into a env branch
+func (p *CodeSourceController) MergeBranchIntoEnv() {
+
 }

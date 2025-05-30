@@ -1,6 +1,10 @@
 package repository
 
-import "onestep/internal/domain/codesource/model"
+import (
+	"github.com/go-git/go-git/v5"
+	"onestep/internal/common/enums"
+	"onestep/internal/domain/codesource/model"
+)
 
 // @Author CY Yan
 // @Date 2025/5/28 18:43
@@ -8,5 +12,16 @@ import "onestep/internal/domain/codesource/model"
 type GitRepository interface {
 
 	// Clone a git branch from remote and return the local path
-	Clone(source *model.CodeSource) (string, error)
+	// source is the CodeSource domain model
+	// branch is the git branch name
+	Clone(source *model.CodeSource, branch enums.Env) (string, error)
+
+	// CheckBranchExist  a git branch
+	CheckBranchExist(source *model.CodeSource, branch enums.Env) (bool, error)
+
+	// GetGitRepository  get git repository to operate git
+	GetGitRepository(source *model.CodeSource) (*git.Repository, error)
+
+	// BranchFromMaster  branch from master
+	BranchFromMaster(source *model.CodeSource, branch enums.Env) error
 }

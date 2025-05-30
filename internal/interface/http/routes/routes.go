@@ -32,6 +32,6 @@ func RegisterRoutes(engine *gin.Engine) {
 
 	codeSourceGroup := v1.Group("/code-source")
 	{
-		codeSourceGroup.POST("/", codeSourceController.Bind)
+		codeSourceGroup.POST("/bind", codeSourceController.Bind)
 	}
 }
