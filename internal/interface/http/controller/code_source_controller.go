@@ -35,12 +35,12 @@ func (p *CodeSourceController) Bind(c *gin.Context) {
 	}
 
 	codeSourceCreateCmd := &cmd.CodeSourceCreateCmd{
-		WorkSpaceId: convert.ToInt(sourceRequest.WorkspaceId),
-		Desc:        sourceRequest.Desc,
-		Password:    sourceRequest.Password,
-		RemoteToken: sourceRequest.RemoteToken,
-		RemoteURL:   sourceRequest.RemoteURL,
-		Username:    sourceRequest.Username,
+		WorkSpaceId:         convert.ToInt(sourceRequest.WorkspaceId),
+		Desc:                sourceRequest.Desc,
+		Password:            sourceRequest.Password,
+		PersonalAccessToken: sourceRequest.PersonalAccessToken,
+		RemoteURL:           sourceRequest.RemoteURL,
+		Username:            sourceRequest.Username,
 	}
 
 	// bind and init code source
@@ -53,7 +53,19 @@ func (p *CodeSourceController) Bind(c *gin.Context) {
 	c.JSON(http.StatusOK, resp.Success(nil))
 }
 
-// MergeBranchIntoEnv merge a dev branch into a env branch
-func (p *CodeSourceController) MergeBranchIntoEnv() {
-
+// MergeBranchIntoEnv merges a dev branch into an env branch.
+func (p *CodeSourceController) MergeBranchIntoEnv(c *gin.Context) {
+	mergeRequest := &request.CodeSourceMergeRequest{}
+	err := c.ShouldBindJSON(mergeRequest)
+	if err != nil {
+		c.JSON(http.StatusOK, resp.InvalidParam(""))
+		return
+	}
+	mergeCmd := &cmd.CodeSourceMergeCmd{
+		CodeSourceId: convert.ToInt(mergeRequest.CodeSourceId),
+		Branch:       mergeRequest.Branch,
+		Env:          mergeRequest.Env,
+	}
+	p.codeSourceApp.MergeBranchIntoEnv(mergeCmd)
+	return
 }

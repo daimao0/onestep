@@ -7,7 +7,7 @@ import (
 // WorkspaceRepository is the interface defining persistence operations for workspace model.uses dependency inversion
 type WorkspaceRepository interface {
 
-	// Insert creates persists a new workspace. Returns error on failure.
+	// Insert a new workspace into persist storage. Returns error on failure.
 	Insert(workspace *model.Workspace) error
 
 	// UpdateById updates an existing workspace. Returns error on failure.

@@ -11,7 +11,7 @@ type Model struct {
 	Id int `gorm:"primaryKey;type:bigint(20) unsigned not null;autoIncrement:false;comment:Snowflake generated unique ID"`
 
 	// CreatedAt record creation time
-	CreatedAt time.Time `gorm:"type:datetime not null;index;default:CURRENT_TIMESTAMP;comment: Record creation time"`
+	CreatedAt time.Time `gorm:"type:datetime not null;index;default:CURRENT_TIMESTAMP;comment:Record creation time"`
 
 	// UpdatedAt record update time
 	UpdatedAt time.Time `gorm:"type:datetime not null;index;default:CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;comment: Last update time"`

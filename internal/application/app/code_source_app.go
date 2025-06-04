@@ -12,4 +12,7 @@ type CodeSourceApp interface {
 
 	// Init code source to local, clone remote git repository and create fat, uat, pre, pro branches
 	Init(cmd *cmd.CodeSourceCreateCmd) error
+
+	// MergeBranchIntoEnv merge branch into env branch
+	MergeBranchIntoEnv(mergeCmd *cmd.CodeSourceMergeCmd)
 }

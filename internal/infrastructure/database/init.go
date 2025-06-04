@@ -29,6 +29,7 @@ func InitDB() {
 func createTablesIfNotExist() {
 	db := GetDB()
 	_ = db.AutoMigrate(&po.WorkspacePO{})
+	_ = db.AutoMigrate(&po.CodeSourcePO{})
 }
 
 // GetDB gets a single database connection.

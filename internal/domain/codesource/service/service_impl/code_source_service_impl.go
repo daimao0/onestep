@@ -13,13 +13,15 @@ import (
 
 // CodeSourceServiceImpl is the implementation of CodeSourceService
 type CodeSourceServiceImpl struct {
-	gitRepository repository.GitRepository
+	gitRepository        repository.GitRepository
+	codeSourceRepository repository.CodeSourceRepository
 }
 
 // NewCodeSourceServiceImpl is the constructor of CodeSourceServiceImpl
 func NewCodeSourceServiceImpl() *CodeSourceServiceImpl {
 	return &CodeSourceServiceImpl{
-		gitRepository: persistence.NewGithubRepositoryImpl(),
+		gitRepository:        persistence.NewGithubRepositoryImpl(),
+		codeSourceRepository: persistence.NewCodeSourceRepositoryImpl(),
 	}
 }
 
@@ -51,4 +53,19 @@ func (p *CodeSourceServiceImpl) Init(source *model.CodeSource) error {
 	}
 
 	return nil
+}
+
+// Save the code source in persistent storage
+func (p *CodeSourceServiceImpl) Save(source *model.CodeSource) error {
+	return p.codeSourceRepository.Insert(source)
+}
+
+// GetById gets the code source domain entity by id
+func (p *CodeSourceServiceImpl) GetById(id int) *model.CodeSource {
+	return p.codeSourceRepository.GetById(id)
+}
+
+// MergeBranchIntoEnv merges the branch into the environment
+func (p *CodeSourceServiceImpl) MergeBranchIntoEnv(source *model.CodeSource, branch string, env enums.Env) {
+	p.gitRepository.Merge(source, branch, env.String())
 }

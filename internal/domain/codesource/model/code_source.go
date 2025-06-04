@@ -31,8 +31,8 @@ type CodeSource struct {
 	// Password is usually the git repository user password
 	Password string
 
-	// RemoteToken is usually a GitHub personal access token
-	RemoteToken string
+	// PersonalAccessToken is usually a GitHub personal access token
+	PersonalAccessToken string
 
 	// CreatedAt record creation time
 	CreatedAt time.Time

@@ -15,12 +15,25 @@ type CodeSourceCreateCmd struct {
 	// Password for git repo, like gitlab personal access token
 	Password string
 
-	// Password for git repo, like gitlab personal access token
-	RemoteToken string
+	// PersonalAccessToken for git repo, like gitlab personal access token
+	PersonalAccessToken string
 
 	// RemoteURL for git repo, like https://github.com/daimao0/onestep
 	RemoteURL string
 
 	// Username for git repo,  like gitlab user daimao0
 	Username string
+}
+
+// CodeSourceMergeCmd is the command for merging a branch into an environment.
+type CodeSourceMergeCmd struct {
+
+	// CodeSourceId is the ID of the code source.
+	CodeSourceId int
+
+	// Branch is the branch to merge.
+	Branch string
+
+	// Env is the environment to merge into.
+	Env string
 }

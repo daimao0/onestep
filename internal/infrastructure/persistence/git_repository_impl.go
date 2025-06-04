@@ -6,9 +6,10 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
-	"log"
+	"github.com/rs/zerolog/log"
 	"onestep/internal/common/enums"
 	"onestep/internal/domain/codesource/model"
+	"os"
 )
 
 // @Author CY Yan
@@ -34,9 +35,74 @@ func (p *GithubRepositoryImpl) Clone(source *model.CodeSource, branch enums.Env)
 	}
 	_, err := git.PlainClone(source.GetGitRepoDirPath()+"_"+branch.String(), false, options)
 	if err != nil {
-		log.Println(err.Error())
+		log.Error().Msg(err.Error())
+		return "", err
 	}
 	return source.GetProjectName(), err
+}
+
+// Checkout checkout a branch
+func (p *GithubRepositoryImpl) Checkout(source *model.CodeSource, branch string) (*git.Worktree, error) {
+	repository, err := p.GetGitRepository(source)
+	if err != nil {
+		return nil, err
+	}
+	//checkout target branch
+	worktree, _ := repository.Worktree()
+	err = worktree.Checkout(&git.CheckoutOptions{
+		Branch: plumbing.ReferenceName("refs/heads/" + branch),
+		Force:  true,
+	})
+	if err != nil {
+		log.Error().Msg(err.Error())
+	}
+	return worktree, err
+}
+
+// Pull a git branch
+func (p *GithubRepositoryImpl) Pull(source *model.CodeSource, branch string) error {
+	workTree, err := p.Checkout(source, branch)
+	if err != nil {
+		return err
+	}
+	err = workTree.Pull(&git.PullOptions{
+		RemoteName: "origin",
+		Auth:       source.GetGitBasicAuth(),
+		Progress:   os.Stdout,
+	})
+	if err != nil && err.Error() == "already up-to-date" {
+		return nil
+	}
+	return err
+}
+
+// Merge source into target branch.
+func (p *GithubRepositoryImpl) Merge(source *model.CodeSource, sourceBranch string, targetBranch string) error {
+	//checkout target branch
+	_, err := p.Checkout(source, targetBranch)
+	if err != nil {
+		log.Error().Msg(err.Error())
+		return fmt.Errorf("checkout target branch error:%w", err)
+	}
+	// pull target branch
+	err = p.Pull(source, targetBranch)
+
+	// get source branch
+	gitRepository, err := p.GetGitRepository(source)
+	if err != nil || gitRepository == nil {
+		log.Error().Msg("get git repository error")
+		return nil
+	}
+	sourceRef, err := gitRepository.Reference(plumbing.ReferenceName("refs/heads/"+sourceBranch), true)
+	if err != nil {
+		_, err := p.Checkout(source, sourceBranch)
+		if err != nil {
+			log.Error().Msg(err.Error())
+		}
+		fmt.Println(sourceRef)
+	}
+
+	return err
 }
 
 // CheckBranchExist  check if the 'env' branch exist
@@ -142,4 +208,14 @@ func (p *GithubRepositoryImpl) BranchFromMaster(source *model.CodeSource, env en
 		},
 	})
 	return err
+}
+
+// getSourceRefForm if the bran  exist, return it, else fetch form origin
+func (p *GithubRepositoryImpl) getSourceRef(source *model.CodeSource, branch string) (*plumbing.Reference, error) {
+	gitRepository, err := p.GetGitRepository(source)
+	if err != nil {
+		log.Error().Msg(err.Error())
+		return nil, err
+	}
+	//gitRepository.Reference()
 }

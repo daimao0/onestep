@@ -16,6 +16,15 @@ type GitRepository interface {
 	// branch is the git branch name
 	Clone(source *model.CodeSource, branch enums.Env) (string, error)
 
+	// Merge source-branch into target-branch
+	Merge(source *model.CodeSource, sourceBranch string, targetBranch string) error
+
+	// Checkout a git branch
+	Checkout(source *model.CodeSource, branch string) (*git.Worktree, error)
+
+	// Pull a git branch
+	Pull(source *model.CodeSource, branch string) error
+
 	// CheckBranchExist  a git branch
 	CheckBranchExist(source *model.CodeSource, branch enums.Env) (bool, error)
 
